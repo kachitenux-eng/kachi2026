@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>静かなる設計者たち</title>
 
   <!-- Swiper.js CSS -->
@@ -71,7 +71,7 @@
       padding: var(--slide-padding-top) var(--slide-padding-h) var(--slide-padding-bottom);
       /* ヘッダー分の余白 */
       background: var(--slide-bg-color);
-      /* box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.02); 画像や大量の要素がある場合、モバイルでスワイプ時のGPUカクつき（フレームドロップ）の大きな原因になるため無効化 */
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.02);
       position: relative;
       /* ヘッダー配置用 */
 
@@ -774,10 +774,7 @@
           pagination: { el: ".swiper-pagination", type: "progressbar" },
           navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
           grabCursor: true,
-          speed: 500, // 800はモバイルのもっさり感に繋がるため、少しネイティブ寄りに速く
-          resistanceRatio: 0.85, // 端でのバウンドを少し重く
-          touchStartPreventDefault: false, // タッチ判定の競合を防ぐ
-          threshold: 10 // わずかな指のブレでスワイプと判定されるのを防ぐ
+          speed: 800
         });
       }
 

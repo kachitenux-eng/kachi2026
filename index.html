@@ -557,7 +557,15 @@
       init() {
         this.reflow();
         this.startSwiper();
-        window.addEventListener('resize', this.debounce(() => this.reReflow(), 300));
+        this.lastWidth = window.innerWidth;
+        window.addEventListener('resize', this.debounce(() => {
+          // スマホなどでのスクロール（スワイプ）時にアドレスバーが隠れて高さだけが変わった際、
+          // Swiperが再構築されてカクつくのを防ぐため、横幅が変わった時のみリフローを実行する
+          if (window.innerWidth !== this.lastWidth) {
+            this.lastWidth = window.innerWidth;
+            this.reReflow();
+          }
+        }, 300));
       }
 
       reReflow() {

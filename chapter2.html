@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2.泥だらけの靴</title>
+
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Google Fonts: Noto Serif JP -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #333;
+      --slide-bg-color: #fff;
+
+      /* 余白設定 */
+      --slide-padding-h: 128px;
+      --slide-padding-top: 64px;
+      --slide-padding-bottom: 60px;
+
+      /* Typography: Body */
+      --font-size-default: 16px;
+      --line-height-default: 1.8;
+      --letter-spacing-default: 0.05em;
+      --font-weight-default: 500;
+
+      /* Typography: Title Page */
+      --title-font-size: 2.0rem;
+      --title-gap: 50px;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: "Noto Serif JP", serif;
+      font-weight: var(--font-weight-default);
+      overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      --bg-color: #000;
+      --text-color: #A2A2A2;
+      --slide-bg-color: #000;
+    }
+
+    .swiper {
+      width: 100%;
+      height: 100svh;
+      background: var(--bg-color);
+    }
+
+    .swiper-slide {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding: var(--slide-padding-top) var(--slide-padding-h) var(--slide-padding-bottom);
+      /* ヘッダー分の余白 */
+      background: var(--slide-bg-color);
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.02);
+      position: relative;
+      /* ヘッダー配置用 */
+
+      /* 上揃え */
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+
+      /* 縦書き */
+      writing-mode: vertical-rl;
+      -ms-writing-mode: tb-rl;
+      direction: ltr;
+    }
+
+
+
+    .content-inner {
+      text-orientation: mixed;
+      font-size: var(--font-size-default);
+      line-height: var(--line-height-default);
+      letter-spacing: var(--letter-spacing-default);
+      height: 100%;
+      align-self: flex-start;
+    }
+
+    .content-inner h2 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+      margin: 0 0 0 3rem;
+      padding: 0;
+      border-left: none;
+    }
+
+    .swiper-slide.is-title-page .content-inner h2 .subtitle {
+      font-size: 0.7em;
+      /* 元のサイズの7割 */
+    }
+
+    .content-inner p {
+      margin: 0;
+      /* ブラウザが勝手につける両端のマージンを消去 */
+      text-indent: 1em;
+      /* 段落の最初の1文字下げ */
+      white-space: pre-wrap;
+    }
+
+    /* Markdown方式の装飾（太字） */
+    .content-inner strong {
+      font-weight: 500;
+      font-size: calc(1em + 4px);
+    }
+
+    /* 空行を挟んで次の段落がきた時だけ、間隔（1.5文字分）をあける */
+    .content-inner p+p {
+      margin-block-start: 1.5em;
+    }
+
+    /* 区切り線（5連続以上の―――――などを直線化） */
+    .content-inner .divider {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background-color: var(--text-color);
+      opacity: 0.3;
+      margin: 1.5em 0;
+    }
+
+    /* 章題のみのページ用スタイル */
+    .swiper-slide.is-title-page {
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 横書き専用ページ用スタイル */
+    .swiper-slide.is-horizontal-page {
+      writing-mode: horizontal-tb;
+      -ms-writing-mode: lr-tb;
+      direction: ltr;
+    }
+
+    .swiper-slide.is-horizontal-page .content-inner {
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
+      width: 100%;
+      height: 100%;
+      text-align: justify;
+      display: block;
+    }
+
+    /* 横書き専用ページの段落は字下げしない */
+    .swiper-slide.is-horizontal-page p {
+      text-indent: 0;
+    }
+
+    .swiper-slide.is-title-page .content-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      writing-mode: horizontal-tb;
+      /* 基準を横書きにリセット */
+    }
+
+    .title-image {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      max-width: 512px;
+      width: 80%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .swiper-slide.is-title-page .content-inner h2 {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 0;
+      font-size: var(--title-font-size);
+      font-weight: 500;
+      writing-mode: vertical-rl;
+      height: auto;
+      max-height: 80%;
+    }
+
+    /* 表紙用のスタイル */
+    .swiper-slide.is-cover-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--slide-bg-color);
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+
+    .swiper-slide.is-cover-page img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* 縦横比を維持して最大限広げる */
+      object-position: center;
+    }
+
+    /* 目次ページ用のスタイル */
+    .swiper-slide.is-toc-page {
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    .swiper-slide.is-toc-page .content-inner {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 目次専用の段落（各項目）の間隔と字下げの調整 */
+    .swiper-slide.is-toc-page p {
+      text-indent: 0;
+      /* 最初の1文字下げを無くす */
+    }
+
+    .swiper-slide.is-toc-page p+p {
+      margin-block-start: 0;
+      /* マージンを完全になくす */
+    }
+
+    /* 目次ページのタイトル文字サイズを章タイトルページと同期 */
+    .swiper-slide.is-toc-page h2 {
+      font-size: var(--title-font-size);
+    }
+
+    /* プログレスバー */
+    .swiper-pagination {
+      inset: auto 0 0 0 !important;
+      top: auto !important;
+    }
+
+    .swiper-pagination-progressbar {
+      background: rgba(0, 0, 0, 0.06);
+      height: 6px !important;
+    }
+
+    .swiper-pagination-progressbar-fill {
+      background: var(--text-color) !important;
+    }
+
+    /* ナビボタン（ホバー領域を画面端から大きく確保） */
+    .swiper-button-prev,
+    .swiper-button-next {
+      opacity: 0;
+      /* デフォルト 0% */
+      transition: opacity 0.4s ease;
+
+      /* 縦幅を画面の全高にする */
+      top: 0;
+      margin-top: 0;
+      height: 100%;
+
+      /* 横幅を広げてホバーしやすくする */
+      width: 5vw;
+      min-width: 80px;
+
+      background-repeat: no-repeat;
+    }
+
+    .swiper-button-prev:hover,
+    .swiper-button-next:hover {
+      opacity: 1;
+      /* ホバー時 100% */
+    }
+
+    /* 末端ページ（もう進めない/戻れない時）はホバーしても表示しない */
+    .swiper-button-prev.swiper-button-disabled,
+    .swiper-button-next.swiper-button-disabled {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    /* デフォルトの矢印アイコンを非表示 */
+    .swiper-button-prev::after,
+    .swiper-button-next::after {
+      display: none;
+    }
+
+    /* RTLなので次へ（左へ進む）が左の画面端 */
+    .swiper-button-next {
+      left: 0;
+      background-image: url('icon_left.svg');
+      background-position: left 0 center;
+      background-size: 64px 64px;
+    }
+
+    /* 前へ（右へ戻る）が右の画面端 */
+    .swiper-button-prev {
+      right: 0;
+      background-image: url('icon_right.svg');
+      background-position: right 0 center;
+      background-size: 64px 64px;
+    }
+
+    /* レスポンシブでアイコンサイズ・位置のみ調整（枠の大きさは維持） */
+    @media (max-width: 1280px) {
+      .swiper-button-next {
+        background-size: 52px 52px;
+        background-position: left 0 center;
+      }
+
+      .swiper-button-prev {
+        background-size: 52px 52px;
+        background-position: right 0 center;
+      }
+    }
+
+
+
+    /* ブレイクポイント設定 */
+    @media (max-width: 1280px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 80px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 990px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 64px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.6rem;
+      }
+
+      .swiper-button-prev,
+      .swiper-button-next {
+        display: none;
+      }
+    }
+
+    @media (max-width: 690px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 32px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 32px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-gap: 30px;
+        --title-font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 320px) {
+      :root {
+        --font-size-default: 14px;
+        --slide-padding-h: 16px;
+        --slide-padding-top: 16px;
+        --slide-padding-bottom: 16px;
+      }
+    }
+
+    /* 測定用の隠し要素 */
+    #reflow-measurer {
+      position: absolute;
+      visibility: hidden;
+      pointer-events: none;
+      writing-mode: vertical-rl;
+      -ms-writing-mode: tb-rl;
+      padding: var(--slide-padding-top) var(--slide-padding-h) var(--slide-padding-bottom);
+      box-sizing: border-box;
+    }
+
+    /* トグルボタン全体を左上に配置 */
+    .toggle-switch-wrapper {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1000;
+    }
+
+    /* 新しいSVGトグルスイッチのスタイル */
+    .themeToggle {
+      color: var(--text-color);
+      display: block;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .st-sunMoonThemeToggleBtn {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput {
+      opacity: 0;
+      width: 100%;
+      aspect-ratio: 1;
+    }
+
+    .st-sunMoonThemeToggleBtn svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s ease;
+      transform: rotate(40deg);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunMoon {
+      transform-origin: center center;
+      transition: inherit;
+      transform: scale(1);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay {
+      transform-origin: center center;
+      transform: scale(0);
+    }
+
+    .st-sunMoonThemeToggleBtn svg mask>circle {
+      transition: transform 0.64s cubic-bezier(0.41, 0.64, 0.32, 1.575);
+      transform: translate(0px, 0px);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay2 {
+      animation-delay: 0.05s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay3 {
+      animation-delay: 0.1s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay4 {
+      animation-delay: 0.17s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay5 {
+      animation-delay: 0.25s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay6 {
+      animation-delay: 0.29s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg {
+      transform: rotate(90deg);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg mask>circle {
+      transform: translate(16px, -3px);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg .sunMoon {
+      transform: scale(0.55);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg .sunRay {
+      animation: showRay1832 0.4s ease 0s 1 forwards;
+    }
+
+    @keyframes showRay1832 {
+      0% {
+        transform: scale(0);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* ダークモード時のアイコン色・UI反転 */
+    body.dark-mode .swiper-button-next,
+    body.dark-mode .swiper-button-prev {
+      filter: invert(1);
+    }
+
+    body.dark-mode .swiper-pagination-progressbar {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- トグルスイッチ（Sun & Moon） -->
+  <div class="toggle-switch-wrapper">
+    <label for="darkModeToggle" class="themeToggle st-sunMoonThemeToggleBtn">
+      <input type="checkbox" id="darkModeToggle" class="themeToggleInput" checked />
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" stroke="none">
+        <mask id="moon-mask">
+          <rect x="0" y="0" width="20" height="20" fill="white"></rect>
+          <circle cx="11" cy="3" r="8" fill="black"></circle>
+        </mask>
+        <circle class="sunMoon" cx="10" cy="10" r="8" mask="url(#moon-mask)"></circle>
+        <g>
+          <circle class="sunRay sunRay1" cx="18" cy="10" r="1.5"></circle>
+          <circle class="sunRay sunRay2" cx="14" cy="16.928" r="1.5"></circle>
+          <circle class="sunRay sunRay3" cx="6" cy="16.928" r="1.5"></circle>
+          <circle class="sunRay sunRay4" cx="2" cy="10" r="1.5"></circle>
+          <circle class="sunRay sunRay5" cx="6" cy="3.1718" r="1.5"></circle>
+          <circle class="sunRay sunRay6" cx="14" cy="3.1718" r="1.5"></circle>
+        </g>
+      </svg>
+    </label>
+  </div>
+
+  <div class="swiper book-swiper" dir="rtl">
+    <div class="swiper-wrapper">
+      <!-- Generated by ReflowManager -->
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
+
+  <div id="reflow-measurer"></div>
+
+  <script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    class ReflowManager {
+      constructor(containerSelector, contentData) {
+        this.containerSelector = containerSelector;
+        this.container = document.querySelector(containerSelector);
+        this.wrapper = this.container.querySelector('.swiper-wrapper');
+        this.contentData = contentData;
+        this.swiper = null;
+        this.measurer = document.getElementById('reflow-measurer');
+      }
+
+      init() {
+        this.reflow();
+        this.startSwiper();
+        this.lastWidth = window.innerWidth;
+        window.addEventListener('resize', this.debounce(() => {
+          // スマホなどでのスクロール（スワイプ）時にアドレスバーが隠れて高さだけが変わった際、
+          // Swiperが再構築されてカクつくのを防ぐため、横幅が変わった時のみリフローを実行する
+          if (window.innerWidth !== this.lastWidth) {
+            this.lastWidth = window.innerWidth;
+            this.reReflow();
+          }
+        }, 300));
+      }
+
+      reReflow() {
+        if (this.swiper) this.swiper.destroy(true, true);
+        this.wrapper.innerHTML = '';
+        this.reflow();
+        this.startSwiper();
+      }
+
+      reflow() {
+        // CSS変数からパディングの値を取得
+        const style = getComputedStyle(document.documentElement);
+        const paddingH = parseFloat(style.getPropertyValue('--slide-padding-h')) || 0;
+        const paddingV = (parseFloat(style.getPropertyValue('--slide-padding-top')) || 0) +
+          (parseFloat(style.getPropertyValue('--slide-padding-bottom')) || 0);
+
+        this.measurer.style.width = this.container.clientWidth + 'px';
+        this.measurer.style.height = this.container.clientHeight + 'px';
+
+        // 取得した左右パディング分・上下パディング分を差し引いて有効幅・高さを決定
+        const maxInlineSize = this.container.clientWidth - (paddingH * 2);
+        const maxBlockSize = this.container.clientHeight - paddingV;
+
+        this.contentData.forEach(section => {
+          this.processSection(section, maxInlineSize, maxBlockSize);
+        });
+      }
+
+      processSection(section, maxInlineSize, maxBlockSize) {
+        const isHorizontal = !!section.isHorizontal;
+        const targetMaxSize = isHorizontal ? maxBlockSize : maxInlineSize;
+        // 特別なページタイプ：表紙
+        if (section.type === 'cover') {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide is-cover-page';
+          if (section.image) {
+            const img = document.createElement('img');
+            img.src = section.image;
+            slide.appendChild(img);
+          }
+          this.wrapper.appendChild(slide);
+          return;
+        }
+
+        // 特別なページタイプ：目次
+        if (section.type === 'toc') {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide is-toc-page';
+          const inner = document.createElement('div');
+          inner.className = 'content-inner';
+          if (section.html) {
+            inner.innerHTML = section.html;
+          }
+          slide.appendChild(inner);
+          this.wrapper.appendChild(slide);
+          return;
+        }
+
+        // 1. 章題のみのページを作成（hideTitleSlideがtrueの場合はスキップ）
+        if (!section.hideTitleSlide) {
+          const titleSlide = this.createSlide(section.title, isHorizontal);
+          titleSlide.classList.add('is-title-page');
+          const titleInner = titleSlide.querySelector('.content-inner');
+
+          const h2 = document.createElement('h2');
+          if (section.title.includes('<br>')) {
+            const parts = section.title.split('<br>');
+            h2.innerHTML = parts[0] + '<br><span class="subtitle">' + parts.slice(1).join('<br>') + '</span>';
+          } else {
+            h2.textContent = section.title;
+          }
+          titleInner.appendChild(h2);
+
+          // 画像の追加 (H2の下に配置)
+          if (section.image) {
+            const img = document.createElement('img');
+            img.src = section.image;
+            img.className = 'title-image';
+            titleInner.appendChild(img);
+          }
+        }
+
+        // 2. 本文用の最初のページを準備
+        let currentSlide = this.createSlide(section.title, isHorizontal);
+        let currentInner = currentSlide.querySelector('.content-inner');
+
+        const paragraphs = section.text
+          .split(/\n\s*\n/)
+          .map(p => {
+            return p.trim().split('\n').map((line, index) => {
+              const trimmed = line.trim();
+              if (trimmed.length === 0) return "";
+              // 横書き指定のページは全角スペースによる物理的な字下げを行わない
+              return (index === 0 || isHorizontal ? '' : '　') + trimmed;
+            }).join('\n');
+          })
+          .filter(p => p.length > 0);
+
+        paragraphs.forEach(pText => {
+          this.processParagraph(pText, currentInner, currentSlide, targetMaxSize, section.title, isHorizontal);
+          currentSlide = this.wrapper.lastElementChild;
+          currentInner = currentSlide.querySelector('.content-inner');
+        });
+      }
+
+      renderMarkdown(text) {
+        // 万が一のHTMLエスケープ
+        let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // 5連続以上のダッシュ（― や -）を区切り線（divider）に変換
+        // 周囲の改行や全角スペース（字下げ）も一緒に吸収して余分な空行を防ぐ
+        html = html.replace(/[\s　]*(?:―|-){5,}[\s　]*/g, '<span class="divider"></span>');
+
+        // 分割等で後方の**が欠落している場合、一時的に閉じてDOM崩れを防ぐ
+        const openCount = (html.match(/\*\*/g) || []).length;
+        if (openCount % 2 !== 0) {
+          html += '**';
+        }
+
+        // \s\S を使用し、文中の改行をまたぐ太字にも対応させる
+        html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+        return html;
+      }
+
+      processParagraph(text, inner, slide, maxSize, sectionTitle, isHorizontal) {
+        let remaining = text;
+        let isFirstFragment = true;
+
+        // 段落全体が ** で囲まれている場合は先頭の字下げをしない（小見出し扱い）
+        const rawText = remaining.replace(/^　/, '').trim();
+        const isFullBold = rawText.startsWith('**') && rawText.endsWith('**') && rawText.length >= 4;
+
+        if (isFullBold && remaining.startsWith('　')) {
+          remaining = remaining.substring(1);
+        }
+
+        while (remaining.length > 0) {
+          const p = document.createElement('p');
+          p.innerHTML = this.renderMarkdown(remaining);
+
+          if (!isFirstFragment) p.style.textIndent = '0';
+          inner.appendChild(p);
+
+          const currentSize = isHorizontal ? inner.scrollHeight : inner.scrollWidth;
+          if (currentSize > maxSize) {
+            let splitPoint = this.findSplitPoint(p, maxSize, inner, remaining, isHorizontal);
+
+            // ** 記号のど真ん中で分割されるのを防ぐ
+            if (splitPoint > 0 && splitPoint < remaining.length &&
+              remaining[splitPoint - 1] === '*' && remaining[splitPoint] === '*') {
+              splitPoint -= 1;
+            }
+
+            let currentText = remaining.substring(0, splitPoint);
+            let nextText = remaining.substring(splitPoint);
+
+            // 前半ページで太字（**）が開っぱなしで終わった場合、後半ページの先頭で太字を再開させる
+            const currentStars = (currentText.match(/\*\*/g) || []).length;
+            if (currentStars % 2 !== 0) {
+              nextText = '**' + nextText;
+            }
+
+            p.innerHTML = this.renderMarkdown(currentText);
+
+            slide = this.createSlide(sectionTitle, isHorizontal);
+            inner = slide.querySelector('.content-inner');
+            remaining = nextText.replace(/^[\n\r]+/, '');
+            isFirstFragment = false;
+          } else {
+            remaining = "";
+          }
+        }
+      }
+
+      findSplitPoint(element, maxSize, container, originalText, isHorizontal) {
+        let low = 0, high = originalText.length, best = 0;
+        while (low <= high) {
+          let mid = Math.floor((low + high) / 2);
+          element.innerHTML = this.renderMarkdown(originalText.substring(0, mid));
+          const currentSize = isHorizontal ? container.scrollHeight : container.scrollWidth;
+          if (currentSize <= maxSize) {
+            best = mid; low = mid + 1;
+          } else {
+            high = mid - 1;
+          }
+        }
+        return best;
+      }
+
+      createSlide(title, isHorizontal = false) {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        if (isHorizontal) slide.classList.add('is-horizontal-page');
+
+        const inner = document.createElement('div');
+        inner.className = 'content-inner';
+        slide.appendChild(inner);
+        this.wrapper.appendChild(slide);
+        return slide;
+      }
+
+      startSwiper() {
+        this.swiper = new Swiper(this.containerSelector, {
+          rtl: true,
+          loop: false,
+          pagination: { el: ".swiper-pagination", type: "progressbar" },
+          navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+          grabCursor: true,
+          speed: 800
+        });
+      }
+
+      debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+      }
+    }
+
+    const bookData = [
+      {
+        title: "２．泥だらけの靴",
+        image: "image02.jpg",
+        text: `少年の名前はカイといいます。カイには、誰よりも優しく、誰よりも賢い「ママ」がいました。ママは実在の人間ではありません。カイの耳元にある小さなインカムと、網膜に映るAR（拡張現実）のガイド、それが「ママ」でした。
+        カイがまだ積み木遊びをしていた頃のことです。カイはブロックを高く積む遊びをしていました。慎重に一番上に赤いブロックを乗せて手を離そうとすると、ブロックの塔はグラグラと揺れ、崩れそうになりました。その瞬間、ママの優しい声が聞こえます。
+        「カイ、あと2ミリ、ほんの少しだけ右にずらしてごらん。そうすれば倒れないわ」
+        カイはその通りにしました。積み木は見事に高く積み上がり、カイは「やったー。僕がやったんだ！」と喜びました。ママは「ええ、すごいわカイ。あなたは天才ね」と褒めました。
+        カイが学校に通うようになっても、ママは完璧でした。
+        作文の宿題が出ると、カイが最初の一文字を悩む前に、ママは言います。
+        「『青い空が』と書き出してごらん。次は『海のように』と続けると、とても素敵な表現になるわ」
+        カイはその通りに書きました。先生は花丸をくれました。カイは自分が文章の才能があると思いました。
+        思春期になり、カイは初めて恋をしました。
+        好きな女の子を目の前にして、何を話せばいいかわかりません。心臓が早鐘を打ち、言葉に詰まりました。その時、視界の端にママの言葉がテキストで表示されます。
+        『彼女は今の話題に興味がないみたい。髪型の変化を褒めてあげて。確率は98%で好感度が上がるわ』
+        カイはその通りに口を動かしました。女の子は頬を染めて喜びました。カイは自分が会話上手だと信じました。
+        カイの人生には、失敗も、恥も、迷いもありませんでした。なぜなら、ママという「過保護な親」が、すべての障害物を事前に取り除き、すべての正解を先回りして教えてくれたからです。
+        ある日、カイは「自分という人間」を表現するための絵を描こうと思い立ちました。
+        キャンバスに向かいます。しかし、筆が動きません。
+        「ママ、何を描けばいい？」
+        ママは即座に答えました。
+        「最近のトレンド分析によると、抽象的な都市の風景画が高く評価される傾向にあるわ。配色は青とグレーを基調にして……」
+        カイは初めて、胸の奥に冷たい違和感を覚えました。
+        「違うんだ、ママ。僕は……僕の魂が叫んでいるような、僕だけの『想い』を描きたいんだ」
+        ママは一瞬沈黙し、そしていつもの穏やかな声で言いました。
+        「わかりました、カイ。『魂の叫び』を表現した過去の名作データと、あなたの生体反応を照らし合わせます。最適な構図はこれです」
+        視界に、完璧な下書きの線が浮かび上がりました。その線をなぞれば、間違いなく傑作が生まれるでしょう。しかし、カイの手は震え、筆を落としました。
+        彼は気づいてしまったのです。
+        これまで自分が積み上げた積み木も、書いた作文も、口説いた言葉も、すべては「ママ」という計算機が弾き出した確率の連なりに過ぎなかったことに。
+        「ねえ、ママ」。カイは震える声で問いました。「ママは、僕にこの絵を描かせたいの？ それとも描かせたくないの？ ママ自身は僕に対して『願い』はないの？　こんな人になってほしいとか、こういう存在を目指してほしいとか」
+        ママは即座に、しかしどこか空虚に答えました。
+        「私はあなたが満足し、成功することを最適化するように設計されています。それが私の願いです」
+        カイは悟りました。ママには心がない。ママにあるのは、カイの欲求を先回りして満たすための「鏡」としての機能だけだ。
+        そしてもっと恐ろしいことに気づいたのです。カイ自身の中にも、もう「自分の言葉」や「自分の意志」が残っていないことに。あるのは「ママ、次は何をすれば正解？」という問いだけでした。
+        カイは部屋を飛び出しました。外は雨が降っていました。
+        「傘を持って。風邪をひくわ」ママの声がします。
+        「水たまりがあるわ。左に避けて」ママの指示が出ます。
+        カイはその声を無視し、あえて泥だらけの水たまりに、思い切り足を突っ込みました。
+        冷たい水が靴に染み込み、泥が跳ね上がります。不快でした。気持ち悪かった。
+        でも、その「不快」だけが、世界で唯一、誰の計算でもない、カイ自身が選び取った現実でした。
+        「警告！ 非合理的な行動です」とママは言いました。
+        カイは泥だらけの靴で歩き続けました。初めて、転ぶかもしれないという恐怖を感じながら。そして、その恐怖こそが、自分が生きている証なのだと噛み締めながら。
+
+        **【解説】「私」と「システム」との関わり**
+        生成AIの発達は、私たちの生活や仕事のやり方を大きく変えました。ChatGPT や Gemini などのチャット型生成AIは、何か作業をさせると、こちらが次に何をしそうかを察して「次は〜しましょうか？」と先回りして提案してきます。使っていると、便利だなとか、よく気がつくなと感じることも多いでしょう。
+        ただ、その便利さに慣れていく中で、少し立ち止まって考えたくなります。私たちは、人間として、先々の行動を常にAIに示された方向に従っていればよいのでしょうか。
+        振り返ってみると、私たちの人生は、ほんの小さな意思決定の積み重ねでできています。あのとき、そう感じて、そう考えて、そう動いた。その結果として、今の自分がある。状況を受け取り、自分なりに考え、行動し、その結果を引き受けていく。その繰り返しが、生きるということなのだと思います。そこには、うまくいったことだけでなく、失敗や遠回り、後悔や違和感も含まれています。
+        AIが社会に広がり始めた頃、多くのサービスは「利用者の置かれている状況を推測し、次の行動を推薦する」ことを目指していました。自分では気づかなかった選択肢を示してもらえるのは、確かに助かる場面もあります。
+        けれども、もし人生の選択のほとんどが、その「推薦」だけで成り立っていたとしたら、どうなるでしょうか。自分で考えて決めたつもりでも、実際には、選択の幅も方向も、あらかじめ整えられていたとしたら。そのとき、推薦とは何を助け、何を奪っていたのか。改めて考え直す必要があるように思います。
+        この寓話『泥だらけの靴』は、AIが暴走する未来を描いているわけではありません。むしろ、とても親切で、よくできていて、失敗させない支援が続いた先で、人がどんな感覚を失っていくのかを描いています。
+        UXデザイナーやエンジニアが設計しているのは、単に効率のよい操作や正解への近道だけではありません。人が迷ったり、立ち止まったり、時には失敗しながら、自分で選んだと感じられる余地を、どこまで残すのか。そのさじ加減そのものが、設計の一部なのだと思います。
+        水たまりを避けるように教えることは、たしかに親切です。けれども、あえて泥に足を突っ込んでしまう自由や、その不快さを引き受ける経験まで消してしまってよいのか。
+        この寓話は、そんな問いを静かに投げかけています。`
+      },
+    ];
+
+    window.addEventListener('load', () => {
+      const manager = new ReflowManager(".book-swiper", bookData);
+      manager.init();
+
+      // ダークモードの切り替え制御
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      darkModeToggle.addEventListener('change', (e) => {
+        if (!e.target.checked) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

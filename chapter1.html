@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1.はじめに</title>
+
+  <!-- Swiper.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Google Fonts: Noto Serif JP -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #333;
+      --slide-bg-color: #fff;
+
+      /* 余白設定 */
+      --slide-padding-h: 128px;
+      --slide-padding-top: 64px;
+      --slide-padding-bottom: 60px;
+
+      /* Typography: Body */
+      --font-size-default: 16px;
+      --line-height-default: 1.8;
+      --letter-spacing-default: 0.05em;
+      --font-weight-default: 500;
+
+      /* Typography: Title Page */
+      --title-font-size: 2.0rem;
+      --title-gap: 50px;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: "Noto Serif JP", serif;
+      font-weight: var(--font-weight-default);
+      overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      --bg-color: #000;
+      --text-color: #A2A2A2;
+      --slide-bg-color: #000;
+    }
+
+    .swiper {
+      width: 100%;
+      height: 100svh;
+      background: var(--bg-color);
+    }
+
+    .swiper-slide {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding: var(--slide-padding-top) var(--slide-padding-h) var(--slide-padding-bottom);
+      /* ヘッダー分の余白 */
+      background: var(--slide-bg-color);
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.02);
+      position: relative;
+      /* ヘッダー配置用 */
+
+      /* 上揃え */
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+
+      /* 縦書き */
+      writing-mode: vertical-rl;
+      -ms-writing-mode: tb-rl;
+      direction: ltr;
+    }
+
+
+
+    .content-inner {
+      text-orientation: mixed;
+      font-size: var(--font-size-default);
+      line-height: var(--line-height-default);
+      letter-spacing: var(--letter-spacing-default);
+      height: 100%;
+      align-self: flex-start;
+    }
+
+    .content-inner h2 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+      margin: 0 0 0 3rem;
+      padding: 0;
+      border-left: none;
+    }
+
+    .swiper-slide.is-title-page .content-inner h2 .subtitle {
+      font-size: 0.7em;
+      /* 元のサイズの7割 */
+    }
+
+    .content-inner p {
+      margin: 0;
+      /* ブラウザが勝手につける両端のマージンを消去 */
+      text-indent: 1em;
+      /* 段落の最初の1文字下げ */
+      white-space: pre-wrap;
+    }
+
+    /* Markdown方式の装飾（太字） */
+    .content-inner strong {
+      font-weight: 500;
+      font-size: calc(1em + 4px);
+    }
+
+    /* 空行を挟んで次の段落がきた時だけ、間隔（1.5文字分）をあける */
+    .content-inner p+p {
+      margin-block-start: 1.5em;
+    }
+
+    /* 区切り線（5連続以上の―――――などを直線化） */
+    .content-inner .divider {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background-color: var(--text-color);
+      opacity: 0.3;
+      margin: 1.5em 0;
+    }
+
+    /* 章題のみのページ用スタイル */
+    .swiper-slide.is-title-page {
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 横書き専用ページ用スタイル */
+    .swiper-slide.is-horizontal-page {
+      writing-mode: horizontal-tb;
+      -ms-writing-mode: lr-tb;
+      direction: ltr;
+    }
+
+    .swiper-slide.is-horizontal-page .content-inner {
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
+      width: 100%;
+      height: 100%;
+      text-align: justify;
+      display: block;
+    }
+
+    /* 横書き専用ページの段落は字下げしない */
+    .swiper-slide.is-horizontal-page p {
+      text-indent: 0;
+    }
+
+    .swiper-slide.is-title-page .content-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      writing-mode: horizontal-tb;
+      /* 基準を横書きにリセット */
+    }
+
+    .title-image {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      max-width: 512px;
+      width: 80%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .swiper-slide.is-title-page .content-inner h2 {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 0;
+      font-size: var(--title-font-size);
+      font-weight: 500;
+      writing-mode: vertical-rl;
+      height: auto;
+      max-height: 80%;
+    }
+
+    /* 表紙用のスタイル */
+    .swiper-slide.is-cover-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--slide-bg-color);
+      width: 100%;
+      height: 100%;
+      padding: 0;
+    }
+
+    .swiper-slide.is-cover-page img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* 縦横比を維持して最大限広げる */
+      object-position: center;
+    }
+
+    /* 目次ページ用のスタイル */
+    .swiper-slide.is-toc-page {
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    .swiper-slide.is-toc-page .content-inner {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 目次専用の段落（各項目）の間隔と字下げの調整 */
+    .swiper-slide.is-toc-page p {
+      text-indent: 0;
+      /* 最初の1文字下げを無くす */
+    }
+
+    .swiper-slide.is-toc-page p+p {
+      margin-block-start: 0;
+      /* マージンを完全になくす */
+    }
+
+    /* 目次ページのタイトル文字サイズを章タイトルページと同期 */
+    .swiper-slide.is-toc-page h2 {
+      font-size: var(--title-font-size);
+    }
+
+    /* プログレスバー */
+    .swiper-pagination {
+      inset: auto 0 0 0 !important;
+      top: auto !important;
+    }
+
+    .swiper-pagination-progressbar {
+      background: rgba(0, 0, 0, 0.06);
+      height: 6px !important;
+    }
+
+    .swiper-pagination-progressbar-fill {
+      background: var(--text-color) !important;
+    }
+
+    /* ナビボタン（ホバー領域を画面端から大きく確保） */
+    .swiper-button-prev,
+    .swiper-button-next {
+      opacity: 0;
+      /* デフォルト 0% */
+      transition: opacity 0.4s ease;
+
+      /* 縦幅を画面の全高にする */
+      top: 0;
+      margin-top: 0;
+      height: 100%;
+
+      /* 横幅を広げてホバーしやすくする */
+      width: 5vw;
+      min-width: 80px;
+
+      background-repeat: no-repeat;
+    }
+
+    .swiper-button-prev:hover,
+    .swiper-button-next:hover {
+      opacity: 1;
+      /* ホバー時 100% */
+    }
+
+    /* 末端ページ（もう進めない/戻れない時）はホバーしても表示しない */
+    .swiper-button-prev.swiper-button-disabled,
+    .swiper-button-next.swiper-button-disabled {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    /* デフォルトの矢印アイコンを非表示 */
+    .swiper-button-prev::after,
+    .swiper-button-next::after {
+      display: none;
+    }
+
+    /* RTLなので次へ（左へ進む）が左の画面端 */
+    .swiper-button-next {
+      left: 0;
+      background-image: url('icon_left.svg');
+      background-position: left 0 center;
+      background-size: 64px 64px;
+    }
+
+    /* 前へ（右へ戻る）が右の画面端 */
+    .swiper-button-prev {
+      right: 0;
+      background-image: url('icon_right.svg');
+      background-position: right 0 center;
+      background-size: 64px 64px;
+    }
+
+    /* レスポンシブでアイコンサイズ・位置のみ調整（枠の大きさは維持） */
+    @media (max-width: 1280px) {
+      .swiper-button-next {
+        background-size: 52px 52px;
+        background-position: left 0 center;
+      }
+
+      .swiper-button-prev {
+        background-size: 52px 52px;
+        background-position: right 0 center;
+      }
+    }
+
+
+
+    /* ブレイクポイント設定 */
+    @media (max-width: 1280px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 80px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 990px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 64px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.6rem;
+      }
+
+      .swiper-button-prev,
+      .swiper-button-next {
+        display: none;
+      }
+    }
+
+    @media (max-width: 690px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 32px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --font-size-default: 16px;
+        --slide-padding-h: 32px;
+        --slide-padding-top: 64px;
+        --slide-padding-bottom: 64px;
+        --title-gap: 30px;
+        --title-font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 320px) {
+      :root {
+        --font-size-default: 14px;
+        --slide-padding-h: 16px;
+        --slide-padding-top: 16px;
+        --slide-padding-bottom: 16px;
+      }
+    }
+
+    /* 測定用の隠し要素 */
+    #reflow-measurer {
+      position: absolute;
+      visibility: hidden;
+      pointer-events: none;
+      writing-mode: vertical-rl;
+      -ms-writing-mode: tb-rl;
+      padding: var(--slide-padding-top) var(--slide-padding-h) var(--slide-padding-bottom);
+      box-sizing: border-box;
+    }
+
+    /* トグルボタン全体を左上に配置 */
+    .toggle-switch-wrapper {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1000;
+    }
+
+    /* 新しいSVGトグルスイッチのスタイル */
+    .themeToggle {
+      color: var(--text-color);
+      display: block;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .st-sunMoonThemeToggleBtn {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput {
+      opacity: 0;
+      width: 100%;
+      aspect-ratio: 1;
+    }
+
+    .st-sunMoonThemeToggleBtn svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s ease;
+      transform: rotate(40deg);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunMoon {
+      transform-origin: center center;
+      transition: inherit;
+      transform: scale(1);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay {
+      transform-origin: center center;
+      transform: scale(0);
+    }
+
+    .st-sunMoonThemeToggleBtn svg mask>circle {
+      transition: transform 0.64s cubic-bezier(0.41, 0.64, 0.32, 1.575);
+      transform: translate(0px, 0px);
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay2 {
+      animation-delay: 0.05s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay3 {
+      animation-delay: 0.1s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay4 {
+      animation-delay: 0.17s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay5 {
+      animation-delay: 0.25s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn svg .sunRay6 {
+      animation-delay: 0.29s !important;
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg {
+      transform: rotate(90deg);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg mask>circle {
+      transform: translate(16px, -3px);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg .sunMoon {
+      transform: scale(0.55);
+    }
+
+    .st-sunMoonThemeToggleBtn .themeToggleInput:checked+svg .sunRay {
+      animation: showRay1832 0.4s ease 0s 1 forwards;
+    }
+
+    @keyframes showRay1832 {
+      0% {
+        transform: scale(0);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* ダークモード時のアイコン色・UI反転 */
+    body.dark-mode .swiper-button-next,
+    body.dark-mode .swiper-button-prev {
+      filter: invert(1);
+    }
+
+    body.dark-mode .swiper-pagination-progressbar {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- トグルスイッチ（Sun & Moon） -->
+  <div class="toggle-switch-wrapper">
+    <label for="darkModeToggle" class="themeToggle st-sunMoonThemeToggleBtn">
+      <input type="checkbox" id="darkModeToggle" class="themeToggleInput" checked />
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" stroke="none">
+        <mask id="moon-mask">
+          <rect x="0" y="0" width="20" height="20" fill="white"></rect>
+          <circle cx="11" cy="3" r="8" fill="black"></circle>
+        </mask>
+        <circle class="sunMoon" cx="10" cy="10" r="8" mask="url(#moon-mask)"></circle>
+        <g>
+          <circle class="sunRay sunRay1" cx="18" cy="10" r="1.5"></circle>
+          <circle class="sunRay sunRay2" cx="14" cy="16.928" r="1.5"></circle>
+          <circle class="sunRay sunRay3" cx="6" cy="16.928" r="1.5"></circle>
+          <circle class="sunRay sunRay4" cx="2" cy="10" r="1.5"></circle>
+          <circle class="sunRay sunRay5" cx="6" cy="3.1718" r="1.5"></circle>
+          <circle class="sunRay sunRay6" cx="14" cy="3.1718" r="1.5"></circle>
+        </g>
+      </svg>
+    </label>
+  </div>
+
+  <div class="swiper book-swiper" dir="rtl">
+    <div class="swiper-wrapper">
+      <!-- Generated by ReflowManager -->
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
+
+  <div id="reflow-measurer"></div>
+
+  <script src="https://unpkg.com/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    class ReflowManager {
+      constructor(containerSelector, contentData) {
+        this.containerSelector = containerSelector;
+        this.container = document.querySelector(containerSelector);
+        this.wrapper = this.container.querySelector('.swiper-wrapper');
+        this.contentData = contentData;
+        this.swiper = null;
+        this.measurer = document.getElementById('reflow-measurer');
+      }
+
+      init() {
+        this.reflow();
+        this.startSwiper();
+        this.lastWidth = window.innerWidth;
+        window.addEventListener('resize', this.debounce(() => {
+          // スマホなどでのスクロール（スワイプ）時にアドレスバーが隠れて高さだけが変わった際、
+          // Swiperが再構築されてカクつくのを防ぐため、横幅が変わった時のみリフローを実行する
+          if (window.innerWidth !== this.lastWidth) {
+            this.lastWidth = window.innerWidth;
+            this.reReflow();
+          }
+        }, 300));
+      }
+
+      reReflow() {
+        if (this.swiper) this.swiper.destroy(true, true);
+        this.wrapper.innerHTML = '';
+        this.reflow();
+        this.startSwiper();
+      }
+
+      reflow() {
+        // CSS変数からパディングの値を取得
+        const style = getComputedStyle(document.documentElement);
+        const paddingH = parseFloat(style.getPropertyValue('--slide-padding-h')) || 0;
+        const paddingV = (parseFloat(style.getPropertyValue('--slide-padding-top')) || 0) +
+          (parseFloat(style.getPropertyValue('--slide-padding-bottom')) || 0);
+
+        this.measurer.style.width = this.container.clientWidth + 'px';
+        this.measurer.style.height = this.container.clientHeight + 'px';
+
+        // 取得した左右パディング分・上下パディング分を差し引いて有効幅・高さを決定
+        const maxInlineSize = this.container.clientWidth - (paddingH * 2);
+        const maxBlockSize = this.container.clientHeight - paddingV;
+
+        this.contentData.forEach(section => {
+          this.processSection(section, maxInlineSize, maxBlockSize);
+        });
+      }
+
+      processSection(section, maxInlineSize, maxBlockSize) {
+        const isHorizontal = !!section.isHorizontal;
+        const targetMaxSize = isHorizontal ? maxBlockSize : maxInlineSize;
+        // 特別なページタイプ：表紙
+        if (section.type === 'cover') {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide is-cover-page';
+          if (section.image) {
+            const img = document.createElement('img');
+            img.src = section.image;
+            slide.appendChild(img);
+          }
+          this.wrapper.appendChild(slide);
+          return;
+        }
+
+        // 特別なページタイプ：目次
+        if (section.type === 'toc') {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide is-toc-page';
+          const inner = document.createElement('div');
+          inner.className = 'content-inner';
+          if (section.html) {
+            inner.innerHTML = section.html;
+          }
+          slide.appendChild(inner);
+          this.wrapper.appendChild(slide);
+          return;
+        }
+
+        // 1. 章題のみのページを作成（hideTitleSlideがtrueの場合はスキップ）
+        if (!section.hideTitleSlide) {
+          const titleSlide = this.createSlide(section.title, isHorizontal);
+          titleSlide.classList.add('is-title-page');
+          const titleInner = titleSlide.querySelector('.content-inner');
+
+          const h2 = document.createElement('h2');
+          if (section.title.includes('<br>')) {
+            const parts = section.title.split('<br>');
+            h2.innerHTML = parts[0] + '<br><span class="subtitle">' + parts.slice(1).join('<br>') + '</span>';
+          } else {
+            h2.textContent = section.title;
+          }
+          titleInner.appendChild(h2);
+
+          // 画像の追加 (H2の下に配置)
+          if (section.image) {
+            const img = document.createElement('img');
+            img.src = section.image;
+            img.className = 'title-image';
+            titleInner.appendChild(img);
+          }
+        }
+
+        // 2. 本文用の最初のページを準備
+        let currentSlide = this.createSlide(section.title, isHorizontal);
+        let currentInner = currentSlide.querySelector('.content-inner');
+
+        const paragraphs = section.text
+          .split(/\n\s*\n/)
+          .map(p => {
+            return p.trim().split('\n').map((line, index) => {
+              const trimmed = line.trim();
+              if (trimmed.length === 0) return "";
+              // 横書き指定のページは全角スペースによる物理的な字下げを行わない
+              return (index === 0 || isHorizontal ? '' : '　') + trimmed;
+            }).join('\n');
+          })
+          .filter(p => p.length > 0);
+
+        paragraphs.forEach(pText => {
+          this.processParagraph(pText, currentInner, currentSlide, targetMaxSize, section.title, isHorizontal);
+          currentSlide = this.wrapper.lastElementChild;
+          currentInner = currentSlide.querySelector('.content-inner');
+        });
+      }
+
+      renderMarkdown(text) {
+        // 万が一のHTMLエスケープ
+        let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // 5連続以上のダッシュ（― や -）を区切り線（divider）に変換
+        // 周囲の改行や全角スペース（字下げ）も一緒に吸収して余分な空行を防ぐ
+        html = html.replace(/[\s　]*(?:―|-){5,}[\s　]*/g, '<span class="divider"></span>');
+
+        // 分割等で後方の**が欠落している場合、一時的に閉じてDOM崩れを防ぐ
+        const openCount = (html.match(/\*\*/g) || []).length;
+        if (openCount % 2 !== 0) {
+          html += '**';
+        }
+
+        // \s\S を使用し、文中の改行をまたぐ太字にも対応させる
+        html = html.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+        return html;
+      }
+
+      processParagraph(text, inner, slide, maxSize, sectionTitle, isHorizontal) {
+        let remaining = text;
+        let isFirstFragment = true;
+
+        // 段落全体が ** で囲まれている場合は先頭の字下げをしない（小見出し扱い）
+        const rawText = remaining.replace(/^　/, '').trim();
+        const isFullBold = rawText.startsWith('**') && rawText.endsWith('**') && rawText.length >= 4;
+
+        if (isFullBold && remaining.startsWith('　')) {
+          remaining = remaining.substring(1);
+        }
+
+        while (remaining.length > 0) {
+          const p = document.createElement('p');
+          p.innerHTML = this.renderMarkdown(remaining);
+
+          if (!isFirstFragment) p.style.textIndent = '0';
+          inner.appendChild(p);
+
+          const currentSize = isHorizontal ? inner.scrollHeight : inner.scrollWidth;
+          if (currentSize > maxSize) {
+            let splitPoint = this.findSplitPoint(p, maxSize, inner, remaining, isHorizontal);
+
+            // ** 記号のど真ん中で分割されるのを防ぐ
+            if (splitPoint > 0 && splitPoint < remaining.length &&
+              remaining[splitPoint - 1] === '*' && remaining[splitPoint] === '*') {
+              splitPoint -= 1;
+            }
+
+            let currentText = remaining.substring(0, splitPoint);
+            let nextText = remaining.substring(splitPoint);
+
+            // 前半ページで太字（**）が開っぱなしで終わった場合、後半ページの先頭で太字を再開させる
+            const currentStars = (currentText.match(/\*\*/g) || []).length;
+            if (currentStars % 2 !== 0) {
+              nextText = '**' + nextText;
+            }
+
+            p.innerHTML = this.renderMarkdown(currentText);
+
+            slide = this.createSlide(sectionTitle, isHorizontal);
+            inner = slide.querySelector('.content-inner');
+            remaining = nextText.replace(/^[\n\r]+/, '');
+            isFirstFragment = false;
+          } else {
+            remaining = "";
+          }
+        }
+      }
+
+      findSplitPoint(element, maxSize, container, originalText, isHorizontal) {
+        let low = 0, high = originalText.length, best = 0;
+        while (low <= high) {
+          let mid = Math.floor((low + high) / 2);
+          element.innerHTML = this.renderMarkdown(originalText.substring(0, mid));
+          const currentSize = isHorizontal ? container.scrollHeight : container.scrollWidth;
+          if (currentSize <= maxSize) {
+            best = mid; low = mid + 1;
+          } else {
+            high = mid - 1;
+          }
+        }
+        return best;
+      }
+
+      createSlide(title, isHorizontal = false) {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        if (isHorizontal) slide.classList.add('is-horizontal-page');
+
+        const inner = document.createElement('div');
+        inner.className = 'content-inner';
+        slide.appendChild(inner);
+        this.wrapper.appendChild(slide);
+        return slide;
+      }
+
+      startSwiper() {
+        this.swiper = new Swiper(this.containerSelector, {
+          rtl: true,
+          loop: false,
+          pagination: { el: ".swiper-pagination", type: "progressbar" },
+          navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+          grabCursor: true,
+          speed: 800
+        });
+      }
+
+      debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+      }
+    }
+
+    const bookData = [
+      {
+        title: "１．はじめに",
+        text: `生成AIは、すでに私たちの日常に深く溶け込んでいます。
+        調査をするとき、文章を綴るとき、誰かに相談したいとき。 気づけば私たちは、AIと対話しながら考え、決め、進むようになりました。
+        UXデザインに関わる作り手として、この変化をどう受け止めればよいのでしょうか。効率が上がること。最適な答えに最短で辿り等けること。それらは確かに、これまで実現しにくかった体験を、誰にでも手の届くものにしました。
+        しかし一方で、少しだけ気にかかることもあります。迷いながら考える時間。立ち止まって悩む感覚。うまくいかなかった結果を、自分なりに引き受け、納得する経験。生成AIの登場によって、私たちはそうした「人間らしさ」に深く関わる時間や感覚を、無意識のうちに手放し始めてはいないでしょうか。
+        これまでのUXデザインは、「効率」や「最適化」を自然なゴールとしてきました。迷わせないこと、失敗させないこと、最短で目的に導くこと。それは多くの場面で人を助けてきましたが、生成AIという強力な加速装置が加わった今、その延長線をただ進んでよいのか、改めて問う必要があるように思います。
+        哲学者のガブリエル・マルセルは、人間を「ホモ・ヴィアトール（旅する人）」と呼びました。人間とは、どこか完成された目的地へ効率よく運ばれるだけの「荷物」ではなく、その道中で迷い、他者と出会い、揺らぎながら歩み続ける「途上の存在」であるという考え方です。
+        AIが膨大なデータから導き出した「最短ルート」を提示してくれる時代だからこそ、私たちは、人間が自らの足で歩き、意味を見つけ出していく「旅のプロセス」そのものを守らなければなりません。人間らしさとは、常に合理的であることではなく、ときに立ち止まり、遠回りをするその「途上の時間」の中にこそ宿るものだからです。
+        この寓話集は、そうした人間性と向き合いながら、作り手としてAIとどう関わっていくかを考えるための「羅針盤」として描かれました。ここに収めた五つの物語は、すべて「作り手の願い」というまなざしに基づいています。
+        作り手は、何を便利にしたいのか。何を守りたいのか。
+        そして、人の中にどんな人間らしさが残り続けてほしいと願うのか。
+        その願いは、仕様書やUIの表面には書かれないかもしれません。けれど、設計の節々に、そしてユーザーの体験の奥底に、確かに滲み出てしまうものです。
+        こうした問いを、性急な結論としてまとめるのではなく、物語への共感を通して、静かに深めてもらいたいと考え、寓話という形を選びました。実のところ、この寓話集自体も、生成AIとの対話を重ねて生まれたものです。
+        ぜひ、五つの寓話を順番に紐解いてみてください。読み進めるうちに、「作り手の願い」とは何か。そして、AIと共に体験を設計する時代に、私たちがどんな人間性を支え、育てていきたいのか。その輪郭が、少しずつ立ち上がってくるはずです。
+        
+        さあ、物語の扉を開けてみましょう`
+      },
+    ];
+
+    window.addEventListener('load', () => {
+      const manager = new ReflowManager(".book-swiper", bookData);
+      manager.init();
+
+      // ダークモードの切り替え制御
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      darkModeToggle.addEventListener('change', (e) => {
+        if (!e.target.checked) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

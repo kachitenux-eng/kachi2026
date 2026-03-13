@@ -512,7 +512,7 @@
   <!-- トグルスイッチ（Sun & Moon） -->
   <div class="toggle-switch-wrapper">
     <label for="darkModeToggle" class="themeToggle st-sunMoonThemeToggleBtn">
-      <input type="checkbox" id="darkModeToggle" class="themeToggleInput" />
+      <input type="checkbox" id="darkModeToggle" class="themeToggleInput" checked />
       <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" stroke="none">
         <mask id="moon-mask">
           <rect x="0" y="0" width="20" height="20" fill="white"></rect>
@@ -1094,7 +1094,7 @@
       // ダークモードの切り替え制御
       const darkModeToggle = document.getElementById('darkModeToggle');
       darkModeToggle.addEventListener('change', (e) => {
-        if (e.target.checked) {
+        if (!e.target.checked) {
           document.body.classList.add('dark-mode');
         } else {
           document.body.classList.remove('dark-mode');
